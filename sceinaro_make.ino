@@ -50,7 +50,7 @@ int initial_9 = 0;
 int initial_10 = 0;
 uint8_t motor[13] = {0, MOTOR1, MOTOR2, MOTOR3, MOTOR4, MOTOR5, MOTOR6, MOTOR7, MOTOR8, MOTOR9};
 
-String data;
+
 
 void setup() {
 
@@ -110,8 +110,8 @@ void inital_func(){
 }
 
 
-void moter_motion(String data){
-  switch(data){
+void moter_motion(String tmp_data){
+  switch(tmp_data){
     case "book1":
       dxl_wb.goalPosition(motor[1], (int32_t)(initial_pos[1] + 7900));
       motor_open[0] = 1;
@@ -187,11 +187,11 @@ void moter_motion(String data){
     default:
       break;
   }
-  sceinaro_make.publish(&data)
+  sceinaro_make.publish(&tmp_data)
 }
 
 void loop() {
-
+  std_msgs::String data;
   const char *log;
   dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
 
@@ -241,9 +241,7 @@ void loop() {
 
   inital_func()
 
-  
   while (Serial2.available()) {
-
     data = Serial2.readStringUntil(' ');
     moter_motion(data)
 
