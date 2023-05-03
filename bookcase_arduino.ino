@@ -1,4 +1,5 @@
 #include <DynamixelWorkbench.h>
+#include <string>
 
 #if defined(__OPENCM904__)
 #define DEVICE_NAME "3" //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
@@ -57,6 +58,7 @@ float Distance_sensing(int i) {
   return duration[i] * 0.034 / 2;
 
 }
+
 
 void setup() {
 
@@ -163,110 +165,120 @@ void loop() {
   while (Serial2.available()) {
 
     String data = Serial2.readStringUntil(' ');
-    if (data == "book5") {
-      sensor_on[0] = 1;
-      //distance[0] = Distance_sensing(0);
-      dxl_wb.goalPosition(motor[5], (int32_t)(initial_pos[5] + 7900));
-      motor_open[0] = 1;
+    switch(data){
+      case "book5":
+        sensor_on[0] = 1;
+        //distance[0] = Distance_sensing(0);
+        dxl_wb.goalPosition(motor[5], (int32_t)(initial_pos[5] + 7900));
+        motor_open[0] = 1;
+        break;
+
+      case "book6":
+          sensor_on[1] = 1;
+          dxl_wb.goalPosition(motor[6], (int32_t)(initial_pos[6] + 7900));
+          motor_open[1] = 1;
+          break;
+        
+      case "book7":
+          sensor_on[2] = 1;
+          dxl_wb.goalPosition(motor[7], (int32_t)(initial_pos[7] + 7900));
+          motor_open[2] = 1;
+          break;
+        
+      case "book8":
+          sensor_on[3] = 1;
+          dxl_wb.goalPosition(motor[8], (int32_t)(initial_pos[8] + 7900));
+          motor_open[3] = 1;
+          break;
+        
+      case "book9":
+          sensor_on[4] = 1;
+          dxl_wb.goalPosition(motor[9], (int32_t)(initial_pos[9] + 7900));
+          motor_open[4] = 1;
+          break;
+        
+      case "book10":
+          sensor_on[5] = 1;
+          dxl_wb.goalPosition(motor[10], (int32_t)(initial_pos[10] -7900));
+          motor_open[5] = 1;
+          break;
+
+      case "book11":
+          sensor_on[6] = 1;
+          dxl_wb.goalPosition(motor[11], (int32_t)(initial_pos[11] + 7900));
+          motor_open[6] = 1;
+          break;
+        
+      case "book12": // 모터 거꾸로 달려있음 
+          sensor_on[7] = 1;
+          dxl_wb.goalPosition(motor[12], (int32_t)(initial_pos[12] -7900));
+          motor_open[7] = 1; 
+          break;
+        
+
+      case "reset5":
+          dxl_wb.goalPosition(motor[5], (int32_t)(initial_pos[5] + 100));
+          motor_open[0] = 0;
+          stack[0] = 0;
+          sensor_on[0] = 0;
+          break;
+        
+
+      case "reset6":
+          dxl_wb.goalPosition(motor[6], (int32_t)(initial_pos[6] + 100));
+          motor_open[1] = 0;
+          stack[1] = 0;
+          sensor_on[1] = 0;
+          break;
+
+      case "reset7":
+          dxl_wb.goalPosition(motor[7], (int32_t)(initial_pos[7] + 100));
+          motor_open[2] = 0;
+          stack[2] = 0;
+          sensor_on[2] = 0;
+          break;
+
+      case "reset8":
+          dxl_wb.goalPosition(motor[8], (int32_t)(initial_pos[8] + 100));
+          motor_open[3] = 0;
+          stack[3] = 0;
+          //sensor_on[3] = 0; 초음파 센서 탑재 후 작성
+          break;
+
+      case "reset9":
+          dxl_wb.goalPosition(motor[9], (int32_t)(initial_pos[9] + 100));
+          motor_open[4] = 0;
+          stack[4] = 0;
+          //sensor_on[4] = 0;
+          break;
+
+      case "reset10":
+          sensor_on[5] = 0;
+          dxl_wb.goalPosition(motor[10], (int32_t)(initial_pos[10] -100));
+          motor_open[5] = 0;
+
+          //sensor_on[5] = 0;
+          break;      
+
+      case "reset11":
+          dxl_wb.goalPosition(motor[11], (int32_t)(initial_pos[11] + 100));
+          motor_open[6] = 0;
+          stack[6] = 0;
+          //sensor_on[6] = 0;
+          break;
+
+
+      case "reset12":
+          sensor_on[7] = 0;
+          dxl_wb.goalPosition(motor[12], (int32_t)(initial_pos[12] -100));
+          motor_open[7] = 0;
+          break;
+          //sensor_on[7] = 0;
+      default:
+          Serial.println("There is no data input")
+          break;
 
     }
-    if (data == "book6") {
-      sensor_on[1] = 1;
-      dxl_wb.goalPosition(motor[6], (int32_t)(initial_pos[6] + 7900));
-      motor_open[1] = 1;
-    }
-    if (data == "book7") {
-      sensor_on[2] = 1;
-      dxl_wb.goalPosition(motor[7], (int32_t)(initial_pos[7] + 7900));
-      motor_open[2] = 1;
-    }
-    if (data == "book8") {
-      sensor_on[3] = 1;
-      dxl_wb.goalPosition(motor[8], (int32_t)(initial_pos[8] + 7900));
-      motor_open[3] = 1;
-    }
-    if (data == "book9") {
-      sensor_on[4] = 1;
-      dxl_wb.goalPosition(motor[9], (int32_t)(initial_pos[9] + 7900));
-      motor_open[4] = 1;
-    }
-    if (data == "book10") { // 모터 거꾸로 달려있음 
-      sensor_on[5] = 1;
-      dxl_wb.goalPosition(motor[10], (int32_t)(initial_pos[10] -7900));
-      motor_open[5] = 1;
-    }
-    if (data == "book11") {
-      sensor_on[6] = 1;
-      dxl_wb.goalPosition(motor[11], (int32_t)(initial_pos[11] + 7900));
-      motor_open[6] = 1;
-    }
-    if (data == "book12") { // 모터 거꾸로 달려있음 
-      sensor_on[7] = 1;
-      dxl_wb.goalPosition(motor[12], (int32_t)(initial_pos[12] -7900));
-      motor_open[7] = 1;
-      
-    }
-
-    if (data == "reset5") {
-      dxl_wb.goalPosition(motor[5], (int32_t)(initial_pos[5] + 100));
-      motor_open[0] = 0;
-      stack[0] = 0;
-      sensor_on[0] = 0;
-    }
-
-    if (data == "reset6") {
-      dxl_wb.goalPosition(motor[6], (int32_t)(initial_pos[6] + 100));
-      motor_open[1] = 0;
-      stack[1] = 0;
-      sensor_on[1] = 0;
-    }
-
-    if (data == "reset7") {
-      dxl_wb.goalPosition(motor[7], (int32_t)(initial_pos[7] + 100));
-      motor_open[2] = 0;
-      stack[2] = 0;
-      sensor_on[2] = 0;
-    }
-
-    if (data == "reset8") {
-      dxl_wb.goalPosition(motor[8], (int32_t)(initial_pos[8] + 100));
-      motor_open[3] = 0;
-      stack[3] = 0;
-      //sensor_on[3] = 0; 초음파 센서 탑재 후 작성
-    }
-
-    if (data == "reset9") {
-      dxl_wb.goalPosition(motor[9], (int32_t)(initial_pos[9] + 100));
-      motor_open[4] = 0;
-      stack[4] = 0;
-      //sensor_on[4] = 0;
-    }
-
-    if (data == "reset10") { // 모터 거꾸로 달려있음 
-      sensor_on[5] = 0;
-      dxl_wb.goalPosition(motor[10], (int32_t)(initial_pos[10] -100));
-      motor_open[5] = 0;
-
-      //sensor_on[5] = 0;
-    }
-
-    if (data == "reset11") {
-      dxl_wb.goalPosition(motor[11], (int32_t)(initial_pos[11] + 100));
-      motor_open[6] = 0;
-      stack[6] = 0;
-      //sensor_on[6] = 0;
-    }
-
-
-    if (data == "reset12") { // 모터 거꾸로 달려있음 
-      sensor_on[7] = 0;
-      dxl_wb.goalPosition(motor[12], (int32_t)(initial_pos[12] -100));
-      motor_open[7] = 0;
-
-      //sensor_on[7] = 0;
-    }
-
-
   }
 
 
