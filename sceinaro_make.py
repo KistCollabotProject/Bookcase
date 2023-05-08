@@ -28,6 +28,7 @@ from std_msgs.msg import Float32, String
 class sceinaro:
     def __init__(self):
 
+        self.count = 0
         self.ac = None
         self.bookcase = None
         self.sceinaro = None
@@ -41,7 +42,7 @@ class sceinaro:
             name="bookcase_num", data_class=String, callback=self.callbackFunction2)
         
         self.subscriber3 = rospy.Subscriber(
-            name="bookcase_num", data_class=String, callback=self.callbackFunction2)
+            name="count", data_class=String, callback=self.callbackFunction3)
 
         
         self.scei_publisher = rospy.Publisher('sceinaro_num', String, queue_size=10)
@@ -58,12 +59,21 @@ class sceinaro:
         self.bookcase = msg.data
         rospy.loginfo(self.bookcase)
 
+    def callbackFunction3(self,msg):
+        self.count = msg.data
+        rospy.loginfo(self.count)
+
+    
+
     def sceinaro_make(self):
         while not rospy.is_shutdown(): #-> c++에서 ros.ok() 느낌
             bookcase_num = int(self.bookcase[-1])
             if self.ac == "adult": #여기서는 책을 3권 뽑았는지 판단
-                
-                pass
+                if self.count >= 3:
+                    self.sceinaro = "sceinaro 1"
+                    self.publisher.publish(self.sceinaro)
+                else: 
+                    pass
             elif self.ac == "child":
                 if bookcase_num >= 1 and bookcase_num <=3: # 최상단일 경우
                     self.sceinaro = "sceinaro 1"
