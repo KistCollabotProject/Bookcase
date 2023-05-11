@@ -1,8 +1,7 @@
 #include <ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/int32.h>
 #include <DynamixelWorkbench.h>
-#include<string>
-
 
 #if defined(__OPENCM904__)
 #define DEVICE_NAME "3" //Dynamixel on Serial3(USART3)  <-OpenCM 485EXP
@@ -21,16 +20,17 @@
 #define MOTOR7  7
 #define MOTOR8  8
 #define MOTOR9  9
-//#define MOTOR10 10  연결x
-
-
-
-//make publisher
-std_msgs::String moter_num //string type으로 bookcase_num topic날림
-ros::Publisher sceinaro_make("bookcase_num",  &moter_num)
 
 DynamixelWorkbench dxl_wb;
 ros::NodeHandle nh;
+
+//make publisher
+std_msgs::String moter_num;
+std_msgs::int32 count;
+
+ros::Publisher sceinaro_make("bookcase_num",  &moter_num);
+ros::Publisher pub_count("count",  &count);
+
 
 int motor_open[9] = {0,};
 //int sensor_on[9] = {0,};
@@ -55,8 +55,8 @@ uint8_t motor[13] = {0, MOTOR1, MOTOR2, MOTOR3, MOTOR4, MOTOR5, MOTOR6, MOTOR7, 
 void setup() {
 
   nh.initNode();
-  nh.advertise();//publisher node 생성
-  
+  nh.advertise(sceinaro_make);
+  nh.advertise(pub_count);
   Serial.begin(9600);
   Serial2.begin(9600);
 }
@@ -158,6 +158,7 @@ void loop() {
   
   while (Serial2.available()) {
 
+//    std::string data = cppString(Serial2.readStringUntil(' '));
     String data = Serial2.readStringUntil(' ');
     if (data == "book1") {
       dxl_wb.goalPosition(motor[1], (int32_t)(initial_pos[1] + 7900));
@@ -165,6 +166,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[1], (int32_t)(initial_pos[1] + 100));
       motor_open[0] = 0;
+      count++;
     }
     
     if (data == "book2") {
@@ -173,6 +175,7 @@ void loop() {
       delay(30000);
       dxl_wb.goalPosition(motor[2], (int32_t)(initial_pos[2] + 100));
       motor_open[1] = 0;
+      count++;
     }
 
     if (data == "book3") {
@@ -181,6 +184,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[3], (int32_t)(initial_pos[3] + 100));
       motor_open[2] = 0;
+      count++;
     }
 
     if (data == "book4") {
@@ -189,6 +193,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[4], (int32_t)(initial_pos[4] + 100));
       motor_open[3] = 0;
+      count++;
     }
 
     if (data == "book5") {
@@ -197,6 +202,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[5], (int32_t)(initial_pos[5] + 100));
       motor_open[4] = 0;
+      count++;
     }
 
     if (data == "book6") {
@@ -205,6 +211,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[6], (int32_t)(initial_pos[6] + 100));
       motor_open[5] = 0;
+      count++;
     }
 
     if (data == "book7") {
@@ -213,6 +220,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[7], (int32_t)(initial_pos[7] + 100));
       motor_open[6] = 0;
+      count++;
     }
 
     if (data == "book8") {
@@ -221,6 +229,7 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[8], (int32_t)(initial_pos[8] + 100));
       motor_open[7] = 0;
+      count++;
     }
 
     if (data == "book9") {
@@ -229,13 +238,17 @@ void loop() {
       delay(6000);
       dxl_wb.goalPosition(motor[9], (int32_t)(initial_pos[9] + 100));
       motor_open[8] = 0;
+      count++;
     }
 
-    sceinaro_make.publish(&data)
-     nh.spinOnce();
+        
+    moter_num.data = data.c_str();
+
+    sceinaro_make.publish(&moter_num);
+    pub_count.publish(&count);
+    nh.spinOnce();
 
 
   }
 
 }
-
