@@ -94,9 +94,9 @@ class sceinaro:
                 rospy.loginfo("Something was wrong with ac or bookcase_num") 
                 self.scei_publisher.publish("There is no people")
             rospy.loginfo(self.sceinaro)
-            self.rate.sleep() #100hz가 될때 까지 쉬기
             self.sceinaro = None #reset
-
+            self.rate.sleep() #100hz가 될때 까지 쉬기
+            
             
 
 
