@@ -67,9 +67,10 @@ class sceinaro:
 
     def sceinaro_make(self):
         while not rospy.is_shutdown(): #-> c++에서 ros.ok() 느낌
-            if self.bookcase == None:
-                continue
-            else:
+            if self.bookcase == None or self.bookcase == '\n':
+                self.sceinaro = None
+                continue   
+            else:  
                 bookcase_num = int(self.bookcase[-1])
             
             
@@ -94,6 +95,7 @@ class sceinaro:
                 self.scei_publisher.publish("There is no people")
             rospy.loginfo(self.sceinaro)
             self.rate.sleep() #100hz가 될때 까지 쉬기
+            self.sceinaro = None #reset
 
             
 
