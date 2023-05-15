@@ -12,6 +12,13 @@ TrackerNode::TrackerNode(ros::NodeHandle& _nh)
 	nh=_nh;
 	lengthPub = nh.advertise<std_msgs::Float32>("length",1000);	
 }
+
+
+OpenCR 에서 보내는 정보     
+
+ros::Publisher sceinaro_make("bookcase_num",  &moter_num)
+std_msgs::String moter_num //string type으로 bookcase_num topic날림
+
 '''
 
 import rospy
@@ -37,7 +44,6 @@ class height:
         #rospy.loginfo(int(data))
         #rospy.loginfo(int(msg.data))
         if int(msg.data) == 0:
-            self.flag = 1
             rospy.loginfo("사람이 인식되지 않음")
             self.ac = "None"
         elif int(msg.data) >= self.height_threshold:
@@ -58,6 +64,8 @@ class height:
             self.rate.sleep() #100hz가 될때 까지 쉬기
 
             
+
+
 
 
 if __name__ == '__main__':
