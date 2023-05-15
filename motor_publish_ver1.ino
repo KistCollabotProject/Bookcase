@@ -1,6 +1,7 @@
+#define USE_USBCON  
 #include <ros.h>
 #include <std_msgs/String.h>
-#include <std_msgs/int32.h>
+#include <std_msgs/Int32.h>
 #include <DynamixelWorkbench.h>
 
 #if defined(__OPENCM904__)
@@ -26,10 +27,10 @@ ros::NodeHandle nh;
 
 //make publisher
 std_msgs::String moter_num;
-std_msgs::int32 count;
+std_msgs::Int32 total_count;
 
 ros::Publisher sceinaro_make("bookcase_num",  &moter_num);
-ros::Publisher pub_count("count",  &count);
+ros::Publisher pub_count("count",  &total_count);
 
 
 int motor_open[9] = {0,};
@@ -49,10 +50,13 @@ int initial_7 = 0;
 int initial_8 = 0;
 int initial_9 = 0;
 int initial_10 = 0;
+int count = 0;
 uint8_t motor[13] = {0, MOTOR1, MOTOR2, MOTOR3, MOTOR4, MOTOR5, MOTOR6, MOTOR7, MOTOR8, MOTOR9};
-
+static uint32_t pre_time;
 
 void setup() {
+  Serial2.print("Here");
+
 
   nh.initNode();
   nh.advertise(sceinaro_make);
@@ -66,7 +70,7 @@ void loop() {
   const char *log;
   dxl_wb.init(DEVICE_NAME, BAUDRATE, &log);
 
-  dxl_wb.ping(motor[1], &model_number, &log); // 모터 모델 지정
+  dxl_wb.ping(motor[1], &model_number, &log); 
   dxl_wb.ping(motor[2], &model_number, &log);
   dxl_wb.ping(motor[3], &model_number, &log);
   dxl_wb.ping(motor[4], &model_number, &log);
@@ -77,7 +81,7 @@ void loop() {
   dxl_wb.ping(motor[9], &model_number, &log);
   //dxl_wb.ping(motor[10], &model_number, &log);
 
-  dxl_wb.setExtendedPositionControlMode(motor[1], &log); // 해당 모델 포지션 모드 설정
+  dxl_wb.setExtendedPositionControlMode(motor[1], &log); 
   dxl_wb.setExtendedPositionControlMode(motor[2], &log);
   dxl_wb.setExtendedPositionControlMode(motor[3], &log);
   dxl_wb.setExtendedPositionControlMode(motor[4], &log);
@@ -88,7 +92,7 @@ void loop() {
   dxl_wb.setExtendedPositionControlMode(motor[9], &log);
   //dxl_wb.setExtendedPositionControlMode(motor[10], &log);
 
-  dxl_wb.torqueOn(motor[1], &log); // 토크 활성화
+  dxl_wb.torqueOn(motor[1], &log);
   dxl_wb.torqueOn(motor[2], &log);
   dxl_wb.torqueOn(motor[3], &log);
   dxl_wb.torqueOn(motor[4], &log);
@@ -99,7 +103,7 @@ void loop() {
   dxl_wb.torqueOn(motor[9], &log);
   //dxl_wb.torqueOn(motor[10], &log);
  
-  dxl_wb.getPresentPositionData(motor[1], &presentposition[1], &log); // 초기 위치 지정
+  dxl_wb.getPresentPositionData(motor[1], &presentposition[1], &log); 
   dxl_wb.getPresentPositionData(motor[2], &presentposition[2], &log);
   dxl_wb.getPresentPositionData(motor[3], &presentposition[3], &log);
   dxl_wb.getPresentPositionData(motor[4], &presentposition[4], &log);
@@ -160,6 +164,7 @@ void loop() {
 
 //    std::string data = cppString(Serial2.readStringUntil(' '));
     String data = Serial2.readStringUntil(' ');
+    
     if (data == "book1") {
       dxl_wb.goalPosition(motor[1], (int32_t)(initial_pos[1] + 7900));
       motor_open[0] = 1;
@@ -172,7 +177,7 @@ void loop() {
     if (data == "book2") {
       dxl_wb.goalPosition(motor[2], (int32_t)(initial_pos[2] + 7900));
       motor_open[1] = 1;
-      delay(30000);
+      delay(6000);
       dxl_wb.goalPosition(motor[2], (int32_t)(initial_pos[2] + 100));
       motor_open[1] = 0;
       count++;
@@ -241,14 +246,30 @@ void loop() {
       count++;
     }
 
-        
-    moter_num.data = data.c_str();
+    if (count > 3){
+      count = 1;
+    }
 
-    sceinaro_make.publish(&moter_num);
-    pub_count.publish(&count);
+    //make topic publish 
+
+    moter_num.data = data.c_str();
+    total_count.data = count;
+    //if (millis()-pre_time >= 50){
+      sceinaro_make.publish(&moter_num);
+      pub_count.publish(&total_count);
+    //  }
+
+    
     nh.spinOnce();
+    //delay(10);
 
 
   }
+ 
+
+    Serial.println("RUNNING");
+    
+    nh.spinOnce();
+    //delay(10);
 
 }
