@@ -22,7 +22,7 @@ std_msgs::String moter_num //string type으로 bookcase_num topic날림
 '''
 
 import rospy
-from std_msgs.msg import Float32, String
+from std_msgs.msg import Float32, String, Int16
 
 
 class sceinaro:
@@ -42,7 +42,7 @@ class sceinaro:
             name="bookcase_num", data_class=String, callback=self.callbackFunction2)
         
         self.subscriber3 = rospy.Subscriber(
-            name="count", data_class=String, callback=self.callbackFunction3)
+            name="count", data_class=Int16, callback=self.callbackFunction3)
 
         
         self.scei_publisher = rospy.Publisher('sceinaro_num', String, queue_size=10)
@@ -52,36 +52,47 @@ class sceinaro:
     def callbackFunction1(self,msg): #ac를 인식하는 부분
         #callback : topic이 발행되는 이벤트가 발생하였을 때 event lisner함수를 콜백함수로 요구
         self.ac = msg.data
-        rospy.loginfo(self.ac)
-        #self.publisher.publish(self.ac)\
+        #rospy.loginfo(self.ac)
+        #self.publisher.publish(self.ac)
     
     def callbackFunction2(self,msg):
         self.bookcase = msg.data
-        rospy.loginfo(self.bookcase)
+        #rospy.loginfo(self.bookcase)
 
     def callbackFunction3(self,msg):
         self.count = msg.data
-        rospy.loginfo(self.count)
+        #rospy.loginfo(self.count)
 
     
 
     def sceinaro_make(self):
         while not rospy.is_shutdown(): #-> c++에서 ros.ok() 느낌
-            bookcase_num = int(self.bookcase[-1])
+            if self.bookcase == None:
+                continue
+            else:
+                bookcase_num = int(self.bookcase[-1])
+            
+            
             if self.ac == "adult": #여기서는 책을 3권 뽑았는지 판단
                 if self.count >= 3:
-                    self.sceinaro = "sceinaro 1"
-                    self.publisher.publish(self.sceinaro)
-                else: 
+                    self.sceinaro = "sceinaro 3"
+                    self.scei_publisher.publish(self.sceinaro)
+                    rospy.loginfo(self.sceinaro)
+                else:
+                    self.sceinaro = None 
                     pass
             elif self.ac == "child":
                 if bookcase_num >= 1 and bookcase_num <=3: # 최상단일 경우
                     self.sceinaro = "sceinaro 1"
-                    self.publisher.publish(self.sceinaro)
+                    self.scei_publisher.publish(self.sceinaro)
+                    rospy.loginfo(self.sceinaro)
                 else: #손에 닿는 경우
+                    self.sceinaro = None
                     pass
             else:
                 rospy.loginfo("Something was wrong with ac or bookcase_num") 
+                self.scei_publisher.publish("There is no people")
+            rospy.loginfo(self.sceinaro)
             self.rate.sleep() #100hz가 될때 까지 쉬기
 
             
@@ -90,6 +101,6 @@ class sceinaro:
 if __name__ == '__main__':
     try:
         s = sceinaro()
-        s.acpub_azsub_action()
+        s.sceinaro_make()
     except rospy.ROSInterruptException:
         pass
