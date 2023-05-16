@@ -164,7 +164,7 @@ void loop() {
 
 //    std::string data = cppString(Serial2.readStringUntil(' '));
     String data = Serial2.readStringUntil(' ');
-    if(data == "book1" || data == "book2"|| data == "book3"|| data == "book4"|| data == "book5"|| data == "book6"|| data == "book7"|| data == "book8"|| data == "book9"){
+    if(data == "book1" || data == "book2"|| data == "book3"|| data == "book4"|| data == "book5"|| data == "book6"|| data == "book7"|| data == "book8"|| data == "book9"|| data == "reset"){
         moter_num.data = data.c_str();
         
         count++;
@@ -247,13 +247,7 @@ void loop() {
     }
 
         
-    moter_num.data = data.c_str();
-    total_count.data = count;
-    //if (millis()-pre_time >= 50){
-      sceinaro_make.publish(&moter_num);
-      pub_count.publish(&total_count);
-    //  }
-    
+
     nh.spinOnce();
     //delay(10);
 
