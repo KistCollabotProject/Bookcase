@@ -70,18 +70,26 @@ class sceinaro:
             if self.bookcase == None or self.bookcase == '\n':
                 self.sceinaro = None
                 continue   
+
+            elif self.bookcase == 'reset':
+                self.sceinaro = 'sceinaro reset'
+                self.scei_publisher.publish(self.sceinaro)
+                rospy.loginfo(self.sceinaro)
+                break
+            
             else:  
                 bookcase_num = int(self.bookcase[-1])
             
             
             if self.ac == "adult": #여기서는 책을 3권 뽑았는지 판단
                 if self.count >= 3:
-                    self.sceinaro = "sceinaro 3"
+                    self.sceinaro = "sceinaro 2"
                     self.scei_publisher.publish(self.sceinaro)
                     rospy.loginfo(self.sceinaro)
                 else:
                     self.sceinaro = None 
                     pass
+
             elif self.ac == "child":
                 if bookcase_num >= 1 and bookcase_num <=3: # 최상단일 경우
                     self.sceinaro = "sceinaro 1"
